@@ -1,0 +1,249 @@
+/* =========================================================
+   VELORA LP
+   Figma: VELORA LP（コピー） / Frame 1（390 × 7002）
+   ---------------------------------------------------------
+   レイアウトの考え方
+   - デザインは幅390pxのスマホ用。--u = 1デザインpx として
+     画面幅に合わせて全体を等倍スケールする（最大430px幅）。
+   - 各要素の座標は HTML の style 属性に Figma の値をそのまま書く
+     （--x / --y / --w / --h / --fs）。--y は各セクション内の相対値。
+   ========================================================= */
+
+:root {
+  --col-max: 430px;
+  --u: calc(min(100vw, var(--col-max)) / 390);
+
+  --c-text: #5a4548;
+  --c-pink: #ff6077;
+  --c-pink-soft: #e28d98;
+  --c-rose: #dc7173;
+  --c-blush: #fff4f2;
+  --c-white: #fff;
+  --c-outside: #f6e9e6;
+
+  --ff-mincho: "Shippori Mincho", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+  --lh-normal: 1.46; /* Figma "Auto"（Shippori Mincho）相当 */
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--c-outside);
+  color: var(--c-text);
+  font-family: var(--ff-mincho);
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: none; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p { margin: 0; font-weight: inherit; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- ページ枠 ---------- */
+.lp {
+  position: relative;
+  width: calc(390 * var(--u));
+  margin: 0 auto;
+  background: var(--c-white);
+  overflow-x: clip;      /* はみ出し画像（-13px 等）で横スクロールさせない */
+}
+@supports not (overflow: clip) {
+  .lp { overflow-x: hidden; }
+}
+@media (min-width: 431px) {
+  .lp { box-shadow: 0 0 40px rgba(90, 69, 72, .12); }
+}
+
+.sec {
+  position: relative;
+  height: calc(var(--sh) * var(--u));
+}
+
+/* ---------- 絶対配置ユーティリティ ---------- */
+.abs {
+  position: absolute;
+  left: calc(var(--x, 0) * var(--u));
+  top: calc(var(--y, 0) * var(--u));
+}
+/* --w / --h 未指定なら無効値 → auto になる */
+.abs { width: calc(var(--w) * var(--u)); height: calc(var(--h) * var(--u)); }
+
+/* 画像：枠いっぱいにcover */
+.fill > img,
+img.fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 画像：Figmaのトリミング（枠からはみ出した画像を切り抜く） */
+.crop { overflow: hidden; }
+.crop > img {
+  position: absolute;
+  left: var(--il, 0);
+  top: var(--it, 0);
+  width: var(--iw, 100%);
+  height: var(--ih, 100%);
+}
+
+/* 回転させた装飾 */
+.rot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rot > img {
+  flex: none;
+  width: calc(var(--s) * var(--u));
+  height: calc(var(--s) * var(--u));
+  object-fit: cover;
+  transform: rotate(var(--r, 0deg));
+}
+
+/* テキスト */
+.txt {
+  font-size: calc(var(--fs, 16) * var(--u));
+  line-height: var(--lh-normal);
+  white-space: nowrap;
+}
+.txt.c { transform: translateX(-50%); text-align: center; } /* --x は中心座標 */
+.lh12 { line-height: 1.2; }
+.w7 { font-weight: 700; }
+.w8 { font-weight: 800; }
+.pink { color: var(--c-pink); }
+.fz { font-size: calc(var(--fz) * var(--u)); }
+
+/* ---------- 共通パーツ ---------- */
+.bg-blush { background: var(--c-blush); }
+
+.label-tab {               /* About VELORA / Price の白タブ */
+  background: var(--c-white);
+  border-radius: 0 calc(10 * var(--u)) calc(10 * var(--u)) 0;
+}
+
+.btn-pink {                /* 「初回無料体験の空き時間を見る」 */
+  display: block;
+  background: var(--c-pink);
+  color: var(--c-white);
+  transition: filter .2s ease;
+}
+.btn-pink:hover { filter: brightness(1.06); }
+.btn-pink .txt { color: var(--c-white); }
+
+.img-link { display: block; transition: transform .2s ease, filter .2s ease; }
+.img-link:hover { filter: brightness(1.04); }
+.img-link:active { transform: scale(.985); }
+
+.rule { background: rgba(255, 96, 119, .7); border-radius: calc(2 * var(--u)); }
+
+.tag {
+  background: var(--c-pink);
+  border-radius: calc(3 * var(--u));
+}
+.tag-txt { color: var(--c-white); }
+
+.circle-white > img { width: 100%; height: 100%; }
+
+/* 写真の上に枠線を重ねる（Figmaの内側ストローク相当。画像は枠の下まで敷く） */
+.framed > img { width: 100%; height: 100%; object-fit: cover; }
+.framed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: calc(var(--bw) * var(--u)) solid var(--bc);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ---------- セクション別 ---------- */
+
+/* 01 FV */
+.fv-veil {
+  background: linear-gradient(to left,
+    rgba(255, 249, 243, 0) 0%,
+    rgba(255, 249, 243, .3) 50%,
+    rgba(255, 249, 243, .7) 100%);
+}
+
+/* 02 お悩み */
+.problem-brush > span {
+  position: relative;
+  display: block;
+  flex: none;
+  width: calc(319.138 * var(--u));
+  height: calc(106.994 * var(--u));
+  overflow: hidden;
+  transform: rotate(4.45deg) skewX(.08deg);
+}
+.problem-brush > span > img {
+  position: absolute;
+  top: 0; left: -0.59%;
+  width: 100.59%; height: 100%;
+}
+.c-rose { color: var(--c-rose); }
+
+/* 03 原因 */
+.cause-tri > img { width: 100%; height: 100%; transform: rotate(180deg); }
+.cause-arch {
+  overflow: hidden;
+  border-radius: calc(120 * var(--u)) calc(120 * var(--u)) 0 0;
+  --bw: 7; --bc: var(--c-blush);
+}
+.c-pink-soft { color: var(--c-pink-soft); }
+
+/* 04 VELORAなら */
+.sec-solution { border-top-left-radius: calc(90 * var(--u)); }
+.trial-card {
+  overflow: hidden;
+  border-radius: calc(16 * var(--u));
+  --bw: 2; --bc: var(--c-pink);
+}
+.trial-card-veil {
+  border-radius: calc(15 * var(--u));
+  background-image: linear-gradient(128.52deg,
+    rgba(255, 255, 255, .44) 47.027%,
+    rgba(255, 255, 255, .092) 81.449%);
+  pointer-events: none;
+}
+
+/* 05 年齢 */
+.sec-age { background: linear-gradient(to bottom, var(--c-blush) 39.423%, var(--c-white) 100%); }
+
+/* 06 About */
+.sec-about { border-top-right-radius: calc(90 * var(--u)); }
+.rotating-circle { pointer-events: none; }
+
+/* 07 体験CTA */
+.trial-photo {
+  overflow: hidden;
+  border-radius: calc(15 * var(--u));
+  --bw: 2; --bc: var(--c-pink);
+}
+.trial-veil {
+  border-radius: calc(15 * var(--u));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, .43), rgba(255, 255, 255, .05));
+  pointer-events: none;
+}
+
+/* 08 Price */
+.sec-price { border-bottom-right-radius: calc(90 * var(--u)); }
+
+.note { color: #000; white-space: pre; line-height: 1.2; }
+
+/* ---------- 表示アニメーション（控えめ） ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal { opacity: 0; transition: opacity .9s ease; }
+  .js .reveal.is-in { opacity: 1; }
+}
